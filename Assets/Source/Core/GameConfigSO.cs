@@ -1,5 +1,7 @@
 ﻿using System;
 using Snake.Actors;
+using Snake.Actors.EdibleElements;
+using Snake.Board;
 using UnityEngine;
 
 namespace Snake.Core
@@ -14,10 +16,10 @@ namespace Snake.Core
         [SerializeField]
         private int boardSize = 5;
         public int BoardSize => boardSize;
-
+        
         [SerializeField]
-        private int initialSnakeLength = 3;
-        public int InitialSnakeLength => initialSnakeLength;
+        private float boardSpacing = 1.0f;
+        public float BoardSpacing => boardSpacing;
 
         [SerializeField]
         private int edibleElementsSpawnFrequency = 10;
@@ -31,9 +33,17 @@ namespace Snake.Core
         private bool allowBoardLooping = true;
         public bool AllowBoardLooping => allowBoardLooping;
 
+        [SerializeField] 
+        private GameField gameFieldPrefab;
+        public GameField GameFieldPrefab => gameFieldPrefab;
+
         [SerializeField]
-        private SnakeActor snakePrefab;
-        public SnakeActor SnakePrefab => snakePrefab;
+        private SnakeHeadActor snakeHeadPrefab;
+        public SnakeHeadActor SnakeHeadPrefab => snakeHeadPrefab;
+        
+        [SerializeField]
+        private SnakeTailActor snakeTailPrefab;
+        public SnakeTailActor SnakeTailPrefab => snakeTailPrefab;
 
         [SerializeField]
         private EdibleElementConfig[] edibleElementPrefabs;

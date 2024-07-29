@@ -1,11 +1,17 @@
-﻿using Snake.Input;
+﻿using System.Collections.Generic;
+using Snake.Core;
+using Snake.Input;
 using UnityEngine;
 
 namespace Snake.Actors
 {
-    public class SnakeActor : GameActor
+    public class SnakeHeadActor : GameActor
     {
+        [SerializeField]
+        private int initialTailLength;
+        
         private Vector2Int currentDirection;
+        private List<SnakeTailActor> tail;
         
         public override void OnSpawn()
         {
@@ -13,6 +19,7 @@ namespace Snake.Actors
             PlayerInputController.OnMovementChanged += OnMovementChanged;
             
             SetDirection(Vector2Int.up);
+            ChangeTailLength(initialTailLength);
         }
         
         public override void OnDespawn()
@@ -20,7 +27,31 @@ namespace Snake.Actors
             base.OnDespawn();
             PlayerInputController.OnMovementChanged -= OnMovementChanged;
         }
+
+        public override void OnTick()
+        {
+            var oldField = CurrentField;
+            var targetField = CurrentField.GetAdjacent(currentDirection);
+            if (targetField == null || !targetField.TrySetActor(this))
+            {
+                GameManager.Instance.GameOver();
+            }
+            else
+            {
+                // TODO update tail
+            }
+        }
+
+        public void ChangeTailLength(int delta)
+        {
+            // TODO change tail length
+        }
         
+        public void ReverseSnake()
+        {
+            // TODO
+        }
+
         private void SetDirection(Vector2Int direction)
         {
             currentDirection = direction;
