@@ -1,4 +1,6 @@
-﻿namespace Snake.Actors.EdibleElements
+﻿using Snake.Core;
+
+namespace Snake.Actors.EdibleElements
 {
     public abstract class EdibleElementActor : GameActor
     {
@@ -7,6 +9,7 @@
             if (other is SnakeHeadActor snakeHead)
             {
                 OnEaten(snakeHead);
+                GameManager.Instance.OnSnakeEatEdible();
                 Despawn();
             }
         }

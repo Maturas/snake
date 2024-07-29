@@ -1,4 +1,5 @@
-﻿using Snake.Board;
+﻿using System;
+using Snake.Board;
 using Snake.Input;
 using Snake.UI;
 using UnityEngine;
@@ -7,6 +8,10 @@ namespace Snake.Core
 {
     public class GameManager : MonoBehaviour
     {
+        public static event Action OnGameStart;
+        public static event Action OnGameOver;
+        public static event Action<int> OnEdibleEaten;
+        
         public static GameManager Instance { get; private set; }
 
         [SerializeField]
@@ -21,19 +26,20 @@ namespace Snake.Core
         private UIManager uiManager;
         public UIManager UIManager => uiManager;
         
-        private bool isGameRunning = false;
+        private bool isGameRunning;
         
-        private float lastTickTime = 0.0f;
+        private float lastTickTime;
 
         private float tickIntervalMultiplier = 1.0f;
-        private float tickIntervalMultiplierDuration = 0.0f;
+        private float tickIntervalMultiplierDuration;
+        
+        private int ediblesEaten;
         
         private void Awake()
         {
             Instance = this;
             PlayerInputController.OnEnterPressed += OnEnterPressed;
-            
-            // TODO UI
+            UIManager.Initialize();
         }
 
         private void OnDestroy()
@@ -65,17 +71,22 @@ namespace Snake.Core
 
         private void StartGame()
         {
+            tickIntervalMultiplier = 1.0f;
+            tickIntervalMultiplierDuration = 0.0f;
+            ediblesEaten = 0;
+            
             GameBoard.Cleanup();
             GameBoard.Initialize();
+            
             // TODO Spawn snake
-            // TODO UI
             isGameRunning = true;
+            OnGameStart?.Invoke();
         }
 
         public void GameOver()
         {
-            // TODO UI
             isGameRunning = false;
+            OnGameOver?.Invoke();
         }
 
         private void OnTick()
@@ -96,6 +107,12 @@ namespace Snake.Core
         {
             tickIntervalMultiplier = multiplier;
             tickIntervalMultiplierDuration = duration;
+        }
+
+        public void OnSnakeEatEdible()
+        {
+            ediblesEaten++;
+            OnEdibleEaten?.Invoke(ediblesEaten);
         }
     }
 }

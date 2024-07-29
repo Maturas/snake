@@ -15,7 +15,6 @@ namespace Snake.Actors
         
         public override void OnSpawn()
         {
-            base.OnSpawn();
             PlayerInputController.OnMovementChanged += OnMovementChanged;
             
             SetDirection(Vector2Int.up);
@@ -24,7 +23,6 @@ namespace Snake.Actors
         
         public override void OnDespawn()
         {
-            base.OnDespawn();
             PlayerInputController.OnMovementChanged -= OnMovementChanged;
         }
 
