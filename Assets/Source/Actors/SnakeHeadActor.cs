@@ -37,7 +37,6 @@ namespace Snake.Actors
 
         public override void OnTick()
         {
-            Debug.Log("TICK");
             var oldField = CurrentField;
             var targetField = CurrentField.GetAdjacent(currentDirection);
             
@@ -55,15 +54,15 @@ namespace Snake.Actors
                     scheduledTailLengthChange = 0;
                 }
                 
+                // Update the tail's position according to head's movemement
+                MoveTail(oldField);
+                
                 // Reverse snake if necessary (can be scheduled by an edible element)
                 if (scheduledReverse)
                 {
                     ReverseSnake();
                     scheduledReverse = false;
                 }
-                
-                // Update the tail's position according to head's movemement
-                MoveTail(oldField);
             }
         }
 
@@ -184,6 +183,9 @@ namespace Snake.Actors
         
         private void ReverseSnake()
         {
+            // TODO Fix bug with snake's direction being wrong
+            // TODO Fix bug with snake's tail not following properly
+            
             if (tail.Count == 0)
                 return;
             
@@ -197,12 +199,14 @@ namespace Snake.Actors
             
             oldTailPosition.UnsetActor();
             oldHeadPosition.UnsetActor();
+            CurrentField = null;
+            lastTail.CurrentField = null;
             
             oldTailPosition.TrySetActor(this);
             oldHeadPosition.TrySetActor(lastTail);
             
             // Reverse the movement direction
-            currentDirection = -currentDirection;
+            SetDirection(-currentDirection);
         }
 
         private void SetDirection(Vector2Int direction)
