@@ -13,7 +13,12 @@ namespace Snake.Input
         ///     This controller's bound InputDevice
         /// </summary>
         public InputDevice BoundDevice { get; private set; }
-        
+
+        /// <summary>
+        ///     Returns true if input should be ignored
+        /// </summary>
+        protected virtual bool ShouldIgnoreInput => false;
+
         /// <summary>
         ///     Sets up this controller to work with given device
         /// </summary>
@@ -21,17 +26,17 @@ namespace Snake.Input
         public void Setup(InputDevice device)
         {
             BoundDevice = device;
-            string controllerName = $"PlayerInputController: {device.displayName} [{device.deviceId}]";
+            var controllerName = $"PlayerInputController: {device.displayName} [{device.deviceId}]";
             gameObject.name = controllerName;
-            
+
             Debug.Log($"Created {controllerName}");
 
             DontDestroyOnLoad(gameObject);
         }
-        
+
         /// <summary>
         ///     Reselects the first preferred UI control
-        /// </summary> 
+        /// </summary>
         /// <returns></returns>
         protected static bool ReselectFirstUIControl()
         {
@@ -39,14 +44,11 @@ namespace Snake.Input
                            EventSystem.current.firstSelectedGameObject != null;
 
             if (reselect)
+            {
                 EventSystem.current.SetSelectedGameObject(EventSystem.current.firstSelectedGameObject);
+            }
 
             return reselect;
         }
-
-        /// <summary>
-        ///     Returns true if input should be ignored
-        /// </summary>
-        protected virtual bool ShouldIgnoreInput => false;
     }
 }

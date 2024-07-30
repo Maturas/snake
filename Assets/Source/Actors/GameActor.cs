@@ -10,7 +10,7 @@ namespace Snake.Actors
     public abstract class GameActor : MonoBehaviour
     {
         public GameField CurrentField { get; set; }
-        
+
         /// <summary>
         ///     Invoked when the actor is spawned on a game field
         /// </summary>
@@ -24,14 +24,14 @@ namespace Snake.Actors
         public virtual void OnTick()
         {
         }
-        
+
         /// <summary>
         ///     Invoked when the actor is despawned from a game field
         /// </summary>
         public virtual void OnDespawn()
         {
         }
-        
+
         /// <summary>
         ///     Invoked when the actor collides with another actor (by the actor attempting to move to this actor's field)
         /// </summary>

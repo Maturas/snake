@@ -7,29 +7,28 @@ using UnityEngine;
 namespace Snake.Actors
 {
     // TODO refactor schedules into a generic queue of actions
-    
+
     /// <summary>
     ///     Snake's head actor, main controller for the player
     /// </summary>
     public class SnakeHeadActor : GameActor
     {
-        [SerializeField]
-        private int initialTailLength;
-        
+        [SerializeField] private int initialTailLength;
+
         private Vector2Int currentDirection;
-        private List<SnakeTailActor> tail;
-        
-        private int scheduledTailLengthChange;
         private bool scheduledReverse;
-        
+
+        private int scheduledTailLengthChange;
+        private List<SnakeTailActor> tail;
+
         public override void OnSpawn()
         {
             PlayerInputController.OnMovementChanged += OnMovementChanged;
-            
+
             SetDirection(Vector2Int.up);
             ChangeTailLength(initialTailLength);
         }
-        
+
         public override void OnDespawn()
         {
             PlayerInputController.OnMovementChanged -= OnMovementChanged;
@@ -39,7 +38,7 @@ namespace Snake.Actors
         {
             var oldField = CurrentField;
             var targetField = CurrentField.GetAdjacent(currentDirection);
-            
+
             if (targetField == null || !targetField.TrySetActor(this))
             {
                 // Hit an obstacle, game over
@@ -53,10 +52,10 @@ namespace Snake.Actors
                     ChangeTailLength(scheduledTailLengthChange);
                     scheduledTailLengthChange = 0;
                 }
-                
+
                 // Update the tail's position according to head's movemement
                 MoveTail(oldField);
-                
+
                 // Reverse snake if necessary (can be scheduled by an edible element)
                 if (scheduledReverse)
                 {
@@ -69,8 +68,10 @@ namespace Snake.Actors
         private void MoveTail(GameField previousHeadPosition)
         {
             if (tail.Count == 0)
+            {
                 return;
-            
+            }
+
             var previousTailPosition = previousHeadPosition;
             foreach (var tailActor in tail)
             {
@@ -89,7 +90,7 @@ namespace Snake.Actors
         {
             scheduledTailLengthChange = delta;
         }
-        
+
         /// <summary>
         ///     Schedules a reverse of the snake at the end of the current tick
         /// </summary>
@@ -136,16 +137,17 @@ namespace Snake.Actors
                         targetPosition = CurrentField.Position - currentDirection;
                         break;
                     }
-                    
+
                     case 1:
                     {
                         // Snake has one tail segment, the new segment's position is based on the relative position of the head and the tail
                         lastTailSegment = tail[^1];
                         var headField = CurrentField;
-                        targetPosition = headField.Position - (headField.Position - lastTailSegment.CurrentField.Position);
+                        targetPosition = headField.Position -
+                                         (headField.Position - lastTailSegment.CurrentField.Position);
                         break;
                     }
-                    
+
                     default:
                     {
                         // Snake has multiple tail segments, the new segment's position is based on the relative position of the last two tail segments
@@ -190,17 +192,19 @@ namespace Snake.Actors
                     GameManager.Instance.GameOver();
                     return;
                 }
-                    
+
                 tail[^1].Despawn();
                 tail.RemoveAt(tail.Count - 1);
             }
         }
-        
+
         private void ReverseSnake()
         {
             if (tail.Count == 0)
+            {
                 return;
-            
+            }
+
             // Reverse the tail's order
             var lastTail = tail[^1];
             tail.RemoveAt(tail.Count - 1);
@@ -210,15 +214,15 @@ namespace Snake.Actors
             // Swap the head and last tail segment's positions
             var oldTailPosition = lastTail.CurrentField;
             var oldHeadPosition = CurrentField;
-            
+
             oldTailPosition.UnsetActor();
             oldHeadPosition.UnsetActor();
             CurrentField = null;
             lastTail.CurrentField = null;
-            
+
             oldTailPosition.TrySetActor(this);
             oldHeadPosition.TrySetActor(lastTail);
-            
+
             // Reverse the movement direction
             SetDirection(-currentDirection);
         }
@@ -226,11 +230,11 @@ namespace Snake.Actors
         private void SetDirection(Vector2Int direction)
         {
             currentDirection = direction;
-            
+
             // Rotate the head to face the new direction
             transform.up = new Vector3(direction.x, direction.y, 0.0f);
         }
-        
+
         private void OnMovementChanged(Vector2Int direction)
         {
             // Prevent the snake from moving into itself
@@ -238,9 +242,11 @@ namespace Snake.Actors
             {
                 var firstTail = tail[0];
                 if (firstTail.CurrentField.Position == CurrentField.Position + direction)
+                {
                     return;
+                }
             }
-            
+
             SetDirection(direction);
         }
     }

@@ -11,14 +11,11 @@ namespace Snake.Board
     /// </summary>
     public class GameBoard : MonoBehaviour
     {
-        [SerializeField] 
-        private float fieldZ;
-        
-        [SerializeField] 
-        private float actorZ;
-        
+        [SerializeField] private float fieldZ;
+        [SerializeField] private float actorZ;
+
         public int BoardSize { get; private set; }
-        
+
         private GameField[,] fields { get; set; }
 
         /// <summary>
@@ -31,7 +28,7 @@ namespace Snake.Board
             SpawnSnake();
             SpawnEdibles();
         }
-        
+
         /// <summary>
         ///     Returns the game field at a given position (if exists)
         /// </summary>
@@ -61,31 +58,32 @@ namespace Snake.Board
             var offset = new Vector3((BoardSize - 1) * boardSpacing / 2, (BoardSize - 1) * boardSpacing / 2, fieldZ);
 
             for (var x = 0; x < BoardSize; x++)
+            for (var y = 0; y < BoardSize; y++)
             {
-                for (var y = 0; y < BoardSize; y++)
-                {
-                    var position = new Vector3(x * boardSpacing, y * boardSpacing, fieldZ) - offset;
-                    var field = Instantiate(fieldPrefab, position, Quaternion.identity, transform);
-                    field.Init(new Vector2Int(x, y), this);
-                    fields[x, y] = field;
-                }
+                var position = new Vector3(x * boardSpacing, y * boardSpacing, fieldZ) - offset;
+                var field = Instantiate(fieldPrefab, position, Quaternion.identity, transform);
+                field.Init(new Vector2Int(x, y), this);
+                fields[x, y] = field;
             }
         }
 
         private void Cleanup()
         {
             if (fields == null)
+            {
                 return;
-            
+            }
+
             foreach (var field in fields)
             {
                 if (field.CurrentActor != null)
                 {
                     field.CurrentActor.Despawn();
                 }
+
                 Destroy(field);
             }
-            
+
             fields = null;
         }
 
@@ -96,17 +94,15 @@ namespace Snake.Board
         {
             var actors = new List<GameActor>();
             for (var x = 0; x < BoardSize; x++)
+            for (var y = 0; y < BoardSize; y++)
             {
-                for (var y = 0; y < BoardSize; y++)
+                var field = fields[x, y];
+                if (field.CurrentActor != null)
                 {
-                    var field = fields[x, y];
-                    if (field.CurrentActor != null)
-                    {
-                        actors.Add(field.CurrentActor);
-                    }
+                    actors.Add(field.CurrentActor);
                 }
             }
-            
+
             foreach (var actor in actors)
             {
                 actor.OnTick();
@@ -118,14 +114,12 @@ namespace Snake.Board
             var unoccupiedFields = new List<GameField>();
 
             for (var x = 0; x < BoardSize; x++)
+            for (var y = 0; y < BoardSize; y++)
             {
-                for (var y = 0; y < BoardSize; y++)
+                var field = fields[x, y];
+                if (!field.IsOccupied)
                 {
-                    var field = fields[x, y];
-                    if (!field.IsOccupied)
-                    {
-                        unoccupiedFields.Add(field);
-                    }
+                    unoccupiedFields.Add(field);
                 }
             }
 
@@ -146,25 +140,25 @@ namespace Snake.Board
         {
             var configs = GameManager.Instance.GameConfig.EdibleElementPrefabs;
             if (configs.Length == 0)
+            {
                 return;
-            
+            }
+
             var unoccupiedFields = GetUnoccupiedFields();
             var amount = Mathf.Min(GameManager.Instance.GameConfig.EdibleElementsSpawnAmount, unoccupiedFields.Count);
-            
-            var selectedConfigs = configs.PickRandomWeightedWithDuplicates(x => x.SpawnRarity, amount).ToArray();
+
+            var selectedConfigs =
+                configs.PickRandomWeightedWithDuplicates(x => x.SpawnRarity, amount).ToArray();
             var selectedFields = unoccupiedFields.PickRandom(amount).ToArray();
-            
-            for (var i = 0; i < amount; i++)
-            {
-                SpawnActor(selectedConfigs[i].Prefab, selectedFields[i]);
-            }
+
+            for (var i = 0; i < amount; i++) SpawnActor(selectedConfigs[i].Prefab, selectedFields[i]);
         }
 
         private void SpawnSnake()
         {
             SpawnActor(GameManager.Instance.GameConfig.SnakeHeadPrefab, GetCenterField());
         }
-        
+
         public SnakeTailActor SpawnSnakeTailSegment(GameField targetField)
         {
             return SpawnActor(GameManager.Instance.GameConfig.SnakeTailPrefab, targetField);
@@ -174,7 +168,7 @@ namespace Snake.Board
         {
             var fieldPosition = field.transform.position;
             fieldPosition.z = actorZ;
-            
+
             var actor = Instantiate(prefab.gameObject, fieldPosition, Quaternion.identity).GetComponent<T>();
             field.TrySetActor(actor);
             actor.OnSpawn();

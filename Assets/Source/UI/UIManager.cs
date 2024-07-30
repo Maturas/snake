@@ -9,30 +9,11 @@ namespace Snake.UI
     /// </summary>
     public class UIManager : MonoBehaviour
     {
-        [SerializeField]
-        private GameObject startGameScreen;
-        
-        [SerializeField]
-        private GameObject gameOverScreen;
-        
-        [SerializeField]
-        private GameObject gameWonScreen;
-        
-        [SerializeField]
-        private GameObject inGameScreen;
-
-        [SerializeField] 
-        private TextMeshProUGUI eatenEdiblesCounter;
-
-        public void Initialize()
-        {
-            GameManager.OnGameStart += OnGameStart;
-            GameManager.OnGameOver += OnGameOver;
-            GameManager.OnGameWon += OnGameWon;
-            GameManager.OnEdibleEaten += OnEdibleEaten;
-            
-            OnGameInitialize();
-        }
+        [SerializeField] private GameObject startGameScreen;
+        [SerializeField] private GameObject gameOverScreen;
+        [SerializeField] private GameObject gameWonScreen;
+        [SerializeField] private GameObject inGameScreen;
+        [SerializeField] private TextMeshProUGUI eatenEdiblesCounter;
 
         private void OnDestroy()
         {
@@ -42,6 +23,16 @@ namespace Snake.UI
             GameManager.OnEdibleEaten -= OnEdibleEaten;
         }
 
+        public void Initialize()
+        {
+            GameManager.OnGameStart += OnGameStart;
+            GameManager.OnGameOver += OnGameOver;
+            GameManager.OnGameWon += OnGameWon;
+            GameManager.OnEdibleEaten += OnEdibleEaten;
+
+            OnGameInitialize();
+        }
+
         private void OnGameInitialize()
         {
             startGameScreen.SetActive(true);
@@ -49,17 +40,17 @@ namespace Snake.UI
             gameWonScreen.SetActive(false);
             inGameScreen.SetActive(false);
         }
-        
+
         private void OnGameStart()
         {
             startGameScreen.SetActive(false);
             gameOverScreen.SetActive(false);
             gameWonScreen.SetActive(false);
             inGameScreen.SetActive(true);
-            
+
             eatenEdiblesCounter.text = "0";
         }
-        
+
         private void OnGameOver()
         {
             startGameScreen.SetActive(false);
@@ -67,7 +58,7 @@ namespace Snake.UI
             gameWonScreen.SetActive(false);
             inGameScreen.SetActive(false);
         }
-        
+
         private void OnGameWon()
         {
             startGameScreen.SetActive(false);
@@ -75,7 +66,7 @@ namespace Snake.UI
             gameWonScreen.SetActive(true);
             inGameScreen.SetActive(false);
         }
-        
+
         private void OnEdibleEaten(int eatenEdibles)
         {
             eatenEdiblesCounter.text = eatenEdibles.ToString();

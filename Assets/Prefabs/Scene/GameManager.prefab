@@ -179,7 +179,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b3713e7e024e49c6bced97d892af921c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <InputControllerPrefab>k__BackingField: {fileID: 7034590022315590905, guid: be579895cc554534182c82ebc94b2908, type: 3}
+  inputControllerPrefab: {fileID: 7034590022315590905, guid: be579895cc554534182c82ebc94b2908, type: 3}
 --- !u!1001 &1217036210590682824
 PrefabInstance:
   m_ObjectHideFlags: 0

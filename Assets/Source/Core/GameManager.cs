@@ -7,43 +7,31 @@ using UnityEngine;
 namespace Snake.Core
 {
     // TODO Implement object pooling for GameFields and GameActors
-    
+
     /// <summary>
     ///     Main class of the game, runs the game loop and handles game state
     /// </summary>
     public class GameManager : MonoBehaviour
     {
-        public static event Action OnGameStart;
-        public static event Action OnGameOver;
-        public static event Action OnGameWon;
-        public static event Action<int> OnEdibleEaten;
-        
-        public static GameManager Instance { get; private set; }
+        [SerializeField] private GameConfigSO gameConfig;
+        [SerializeField] private GameBoard gameBoard;
+        [SerializeField] private UIManager uiManager;
+        [SerializeField] private Camera mainCamera;
 
-        [SerializeField]
-        private GameConfigSO gameConfig;
-        public GameConfigSO GameConfig => gameConfig;
-        
-        [SerializeField]
-        private GameBoard gameBoard;
-        
-        [SerializeField]
-        private UIManager uiManager;
+        private int ediblesEaten;
 
-        [SerializeField] 
-        private Camera mainCamera;
-        
         private bool isGameRunning;
-        
+
         private float lastTickTime;
 
         private float tickIntervalMultiplier = 1.0f;
         private float tickIntervalMultiplierDuration;
-        
-        private int ediblesEaten;
-        
+
         private int ticksSinceLastEdibleSpawn;
-        
+
+        public static GameManager Instance { get; private set; }
+        public GameConfigSO GameConfig => gameConfig;
+
         private void Awake()
         {
             Instance = this;
@@ -52,17 +40,13 @@ namespace Snake.Core
             uiManager.Initialize();
         }
 
-        private void OnDestroy()
-        {
-            Instance = null;
-            PlayerInputController.OnEnterPressed -= OnEnterPressed;
-        }
-
         private void Update()
         {
             if (!isGameRunning)
+            {
                 return;
-            
+            }
+
             if (tickIntervalMultiplierDuration > 0.0f)
             {
                 tickIntervalMultiplierDuration -= Time.deltaTime;
@@ -71,7 +55,7 @@ namespace Snake.Core
             {
                 tickIntervalMultiplier = 1.0f;
             }
-            
+
             if (Time.time - lastTickTime >= gameConfig.TickInterval * tickIntervalMultiplier)
             {
                 lastTickTime = Time.time;
@@ -79,14 +63,25 @@ namespace Snake.Core
             }
         }
 
+        private void OnDestroy()
+        {
+            Instance = null;
+            PlayerInputController.OnEnterPressed -= OnEnterPressed;
+        }
+
+        public static event Action OnGameStart;
+        public static event Action OnGameOver;
+        public static event Action OnGameWon;
+        public static event Action<int> OnEdibleEaten;
+
         private void StartGame()
         {
             tickIntervalMultiplier = 1.0f;
             tickIntervalMultiplierDuration = 0.0f;
             ediblesEaten = 0;
-            
+
             gameBoard.OnStartGame();
-            
+
             lastTickTime = Time.time;
             isGameRunning = true;
             OnGameStart?.Invoke();
@@ -107,7 +102,7 @@ namespace Snake.Core
         private void OnTick()
         {
             gameBoard.OnTick();
-            
+
             ticksSinceLastEdibleSpawn++;
             if (ticksSinceLastEdibleSpawn >= gameConfig.EdibleElementsSpawnFrequency)
             {
@@ -119,11 +114,13 @@ namespace Snake.Core
         private void OnEnterPressed()
         {
             if (isGameRunning)
+            {
                 return;
-            
+            }
+
             StartGame();
         }
-        
+
         public void SetTickIntervalMultiplier(float multiplier, float duration)
         {
             tickIntervalMultiplier = multiplier;

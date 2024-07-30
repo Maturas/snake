@@ -2,6 +2,7 @@
 using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.Serialization;
 
 namespace Snake.Input
 {
@@ -10,9 +11,8 @@ namespace Snake.Input
     /// </summary>
     public class InputManager : MonoBehaviour
     {
-        [field: SerializeField]
-        private InputControllerBase InputControllerPrefab { get; set; }
-        
+        [SerializeField] private InputControllerBase inputControllerPrefab;
+
         /// <summary>
         ///     References to all existing InputControllers
         /// </summary>
@@ -21,12 +21,13 @@ namespace Snake.Input
         private void Awake()
         {
             AllControllers = new List<InputControllerBase>();
-            
+
             // Setup Input Controllers for all available devices
             foreach (var device in InputSystem.devices)
             {
                 CreateController(device);
             }
+
             InputSystem.onDeviceChange += OnDeviceChange;
         }
 
@@ -56,7 +57,7 @@ namespace Snake.Input
                 }
             }
         }
-        
+
         /// <summary>
         ///     Creates a new InputController instance for given InputDevice
         /// </summary>
@@ -64,14 +65,16 @@ namespace Snake.Input
         private void CreateController(InputDevice device)
         {
             if (device.displayName == "Mouse") // Mouse gets bound automatically with the keyboard
+            {
                 return;
-            
-            var input = PlayerInput.Instantiate(InputControllerPrefab.gameObject, pairWithDevice: device);
+            }
+
+            var input = PlayerInput.Instantiate(inputControllerPrefab.gameObject, pairWithDevice: device);
             var controller = input.GetComponent<InputControllerBase>();
             controller.Setup(device);
             AllControllers.Add(controller);
         }
-        
+
         /// <summary>
         ///     Removes the InputController to which given InputDevice is bound.
         /// </summary>
@@ -79,7 +82,7 @@ namespace Snake.Input
         private void RemoveController(InputDevice device)
         {
             var controller = AllControllers.SingleOrDefault(i => i.BoundDevice.deviceId == device.deviceId);
-            
+
             Debug.Assert(controller != null);
             AllControllers.Remove(controller);
             Destroy(controller.gameObject);

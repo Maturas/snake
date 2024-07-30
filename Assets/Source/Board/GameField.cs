@@ -13,9 +13,9 @@ namespace Snake.Board
         public Vector2Int Position { get; private set; }
         public GameActor CurrentActor { get; private set; }
         public GameBoard GameBoard { get; private set; }
-        
+
         public bool IsOccupied => CurrentActor != null;
-        
+
         public void Init(Vector2Int position, GameBoard gameBoard)
         {
             Position = position;
@@ -28,18 +28,19 @@ namespace Snake.Board
             {
                 CurrentActor.OnCollide(actor);
             }
-            
+
             if (CurrentActor == null)
             {
                 if (actor.CurrentField != null)
                 {
                     actor.CurrentField.UnsetActor();
                 }
-                
+
                 CurrentActor = actor;
                 actor.CurrentField = this;
-                actor.transform.position = new Vector3(transform.position.x, transform.position.y, actor.transform.position.z);
-                
+                actor.transform.position =
+                    new Vector3(transform.position.x, transform.position.y, actor.transform.position.z);
+
                 return true;
             }
             else
@@ -52,11 +53,11 @@ namespace Snake.Board
         {
             CurrentActor = null;
         }
-        
+
         public GameField GetAdjacent(Vector2Int direction)
         {
             var targetPosition = Position + direction;
-            
+
             if (targetPosition.x > 0 && targetPosition.x < GameBoard.BoardSize &&
                 targetPosition.y > 0 && targetPosition.y < GameBoard.BoardSize)
             {
@@ -65,18 +66,29 @@ namespace Snake.Board
             else if (GameManager.Instance.GameConfig.AllowBoardLooping)
             {
                 if (targetPosition.x < 0)
+                {
                     targetPosition.x = GameBoard.BoardSize - 1;
+                }
                 else if (targetPosition.x >= GameBoard.BoardSize)
+                {
                     targetPosition.x = 0;
-                
+                }
+
                 if (targetPosition.y < 0)
+                {
                     targetPosition.y = GameBoard.BoardSize - 1;
+                }
                 else if (targetPosition.y >= GameBoard.BoardSize)
+                {
                     targetPosition.y = 0;
-                
+                }
+
                 return GameBoard.GetField(targetPosition);
             }
-            else return null;
+            else
+            {
+                return null;
+            }
         }
 
         public GameField[] GetAdjacents(bool includeDiagonals)
@@ -113,14 +125,22 @@ namespace Snake.Board
                 else if (GameManager.Instance.GameConfig.AllowBoardLooping)
                 {
                     if (targetPosition.x < 0)
+                    {
                         targetPosition.x = GameBoard.BoardSize - 1;
+                    }
                     else if (targetPosition.x >= GameBoard.BoardSize)
+                    {
                         targetPosition.x = 0;
+                    }
 
                     if (targetPosition.y < 0)
+                    {
                         targetPosition.y = GameBoard.BoardSize - 1;
+                    }
                     else if (targetPosition.y >= GameBoard.BoardSize)
+                    {
                         targetPosition.y = 0;
+                    }
 
                     adjacents.Add(GameBoard.GetField(targetPosition));
                 }
