@@ -101,77 +101,16 @@ namespace Snake.Actors
         private void ChangeTailLength(int delta)
         {
             tail ??= new List<SnakeTailActor>();
-            if (delta == 0)
-                return;
-
-            if (delta > 0)
+            switch (delta)
             {
-                // Grow the snake's tail
-                for (var i = 0; i < delta; i++)
-                {
-                    Vector2Int targetPosition;
-                    GameActor lastTailSegment;
-                    
-                    if (tail.Count == 0)
-                    {
-                        // Snake has no tail, spawn a new segment behind the head
-                        lastTailSegment = this;
-                        targetPosition = CurrentField.Position - currentDirection;
-                    }
-                    else if (tail.Count == 1)
-                    {
-                        // Snake has only one tail segment, the new segment's position is based on the relative position of the head and the tail
-                        var headField = CurrentField;
-                        lastTailSegment = tail[^1];
-                    
-                        targetPosition = headField.Position - (headField.Position - lastTailSegment.CurrentField.Position);
-                    }
-                    else
-                    {
-                        // Snake has more than one tail segment, the new segment's position is based on the relative position of the last two tail segments
-                        lastTailSegment = tail[^1];
-                        var secondLastTailField = tail[^2].CurrentField;
-                    
-                        targetPosition = lastTailSegment.CurrentField.Position - (lastTailSegment.CurrentField.Position - secondLastTailField.Position);
-                    }
-
-                    var targetField = CurrentField.GameBoard.GetField(targetPosition);
-                    if (targetField.IsOccupied)
-                    {
-                        // If the target field is occupied, try to find an adjacent field that is not occupied
-                        var adjacentFields = lastTailSegment.CurrentField.GetAdjacents(false);
-                        foreach (var field in adjacentFields)
-                        {
-                            if (!field.IsOccupied)
-                            {
-                                targetField = field;
-                                break;
-                            }
-                        }
-                    }
-
-                    // Spawn the new tail segment if the target field is not occupied
-                    if (!targetField.IsOccupied)
-                    {
-                        tail.Add(CurrentField.GameBoard.SpawnSnakeTailSegment(targetField));
-                    }
-                }
-            }
-            else
-            {
-                // Shrink the snake's tale
-                for (var i = 0; i < -delta; i++)
-                {
-                    if (tail.Count == 0)
-                    {
-                        // Snake has lost its entire tail, game over
-                        GameManager.Instance.GameOver();
-                        return;
-                    }
-                    
-                    tail[^1].Despawn();
-                    tail.RemoveAt(tail.Count - 1);
-                }
+                case 0:
+                    return;
+                case > 0:
+                    GrowTail(delta);
+                    break;
+                default:
+                    ShrinkTail(-delta);
+                    break;
             }
 
             // If the snake occupies the entire game board, the game is won
@@ -180,18 +119,93 @@ namespace Snake.Actors
                 GameManager.Instance.GameWon();
             }
         }
+
+        private void GrowTail(int amount)
+        {
+            for (var i = 0; i < amount; i++)
+            {
+                Vector2Int targetPosition;
+                GameActor lastTailSegment;
+
+                switch (tail.Count)
+                {
+                    case 0:
+                    {
+                        // Snake has no tail, spawn a new segment behind the head
+                        lastTailSegment = this;
+                        targetPosition = CurrentField.Position - currentDirection;
+                        break;
+                    }
+                    
+                    case 1:
+                    {
+                        // Snake has one tail segment, the new segment's position is based on the relative position of the head and the tail
+                        lastTailSegment = tail[^1];
+                        var headField = CurrentField;
+                        targetPosition = headField.Position - (headField.Position - lastTailSegment.CurrentField.Position);
+                        break;
+                    }
+                    
+                    default:
+                    {
+                        // Snake has multiple tail segments, the new segment's position is based on the relative position of the last two tail segments
+                        lastTailSegment = tail[^1];
+                        var secondLastTailField = tail[^2].CurrentField;
+                        targetPosition = lastTailSegment.CurrentField.Position -
+                                         (lastTailSegment.CurrentField.Position - secondLastTailField.Position);
+                        break;
+                    }
+                }
+
+                var targetField = CurrentField.GameBoard.GetField(targetPosition);
+                if (targetField.IsOccupied)
+                {
+                    // If the target field is occupied, try to find an adjacent field that is not occupied
+                    var adjacentFields = lastTailSegment.CurrentField.GetAdjacents(false);
+                    foreach (var field in adjacentFields)
+                    {
+                        if (!field.IsOccupied)
+                        {
+                            targetField = field;
+                            break;
+                        }
+                    }
+                }
+
+                // Spawn the new tail segment if the target field is not occupied
+                if (!targetField.IsOccupied)
+                {
+                    tail.Add(CurrentField.GameBoard.SpawnSnakeTailSegment(targetField));
+                }
+            }
+        }
+
+        private void ShrinkTail(int amount)
+        {
+            for (var i = 0; i < amount; i++)
+            {
+                if (tail.Count == 0)
+                {
+                    // Snake has lost its entire tail, game over
+                    GameManager.Instance.GameOver();
+                    return;
+                }
+                    
+                tail[^1].Despawn();
+                tail.RemoveAt(tail.Count - 1);
+            }
+        }
         
         private void ReverseSnake()
         {
-            // TODO Fix bug with snake's direction being wrong
-            // TODO Fix bug with snake's tail not following properly
-            
             if (tail.Count == 0)
                 return;
             
             // Reverse the tail's order
             var lastTail = tail[^1];
+            tail.RemoveAt(tail.Count - 1);
             tail.Reverse();
+            tail.Add(lastTail);
 
             // Swap the head and last tail segment's positions
             var oldTailPosition = lastTail.CurrentField;
