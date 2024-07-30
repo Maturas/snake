@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace Snake.UI
 {
+    /// <summary>
+    ///     UI manager class, handles UI screens and elements
+    /// </summary>
     public class UIManager : MonoBehaviour
     {
         [SerializeField]
@@ -11,6 +14,9 @@ namespace Snake.UI
         
         [SerializeField]
         private GameObject gameOverScreen;
+        
+        [SerializeField]
+        private GameObject gameWonScreen;
         
         [SerializeField]
         private GameObject inGameScreen;
@@ -22,6 +28,7 @@ namespace Snake.UI
         {
             GameManager.OnGameStart += OnGameStart;
             GameManager.OnGameOver += OnGameOver;
+            GameManager.OnGameWon += OnGameWon;
             GameManager.OnEdibleEaten += OnEdibleEaten;
             
             OnGameInitialize();
@@ -31,6 +38,7 @@ namespace Snake.UI
         {
             GameManager.OnGameStart -= OnGameStart;
             GameManager.OnGameOver -= OnGameOver;
+            GameManager.OnGameWon -= OnGameWon;
             GameManager.OnEdibleEaten -= OnEdibleEaten;
         }
 
@@ -38,6 +46,7 @@ namespace Snake.UI
         {
             startGameScreen.SetActive(true);
             gameOverScreen.SetActive(false);
+            gameWonScreen.SetActive(false);
             inGameScreen.SetActive(false);
         }
         
@@ -45,6 +54,7 @@ namespace Snake.UI
         {
             startGameScreen.SetActive(false);
             gameOverScreen.SetActive(false);
+            gameWonScreen.SetActive(false);
             inGameScreen.SetActive(true);
             
             eatenEdiblesCounter.text = "0";
@@ -54,6 +64,15 @@ namespace Snake.UI
         {
             startGameScreen.SetActive(false);
             gameOverScreen.SetActive(true);
+            gameWonScreen.SetActive(false);
+            inGameScreen.SetActive(false);
+        }
+        
+        private void OnGameWon()
+        {
+            startGameScreen.SetActive(false);
+            gameOverScreen.SetActive(false);
+            gameWonScreen.SetActive(true);
             inGameScreen.SetActive(false);
         }
         

@@ -1,14 +1,20 @@
-﻿using Snake.Actors;
+﻿using System.Collections.Generic;
+using Snake.Actors;
 using Snake.Core;
 using UnityEngine;
 
 namespace Snake.Board
 {
+    /// <summary>
+    ///     Game field class, represents a single field on the game board, can be occupied by a game actor
+    /// </summary>
     public class GameField : MonoBehaviour
     {
         public Vector2Int Position { get; private set; }
         public GameActor CurrentActor { get; private set; }
         public GameBoard GameBoard { get; private set; }
+        
+        public bool IsOccupied => CurrentActor != null;
         
         public void Init(Vector2Int position, GameBoard gameBoard)
         {
@@ -18,7 +24,7 @@ namespace Snake.Board
 
         public bool TrySetActor(GameActor actor)
         {
-            if (CurrentActor != null)
+            if (IsOccupied)
             {
                 CurrentActor.OnCollide(actor);
             }
@@ -51,26 +57,76 @@ namespace Snake.Board
         {
             var targetPosition = Position + direction;
             
-            if (targetPosition.x > 0 && targetPosition.x < GameBoard.Fields.GetLength(0) &&
-                targetPosition.y > 0 && targetPosition.y < GameBoard.Fields.GetLength(1))
+            if (targetPosition.x > 0 && targetPosition.x < GameBoard.BoardSize &&
+                targetPosition.y > 0 && targetPosition.y < GameBoard.BoardSize)
             {
-                return GameBoard.Fields[targetPosition.x, targetPosition.y];
+                return GameBoard.GetField(targetPosition);
             }
             else if (GameManager.Instance.GameConfig.AllowBoardLooping)
             {
                 if (targetPosition.x < 0)
-                    targetPosition.x = GameBoard.Fields.GetLength(0) - 1;
-                else if (targetPosition.x >= GameBoard.Fields.GetLength(0))
+                    targetPosition.x = GameBoard.BoardSize - 1;
+                else if (targetPosition.x >= GameBoard.BoardSize)
                     targetPosition.x = 0;
                 
                 if (targetPosition.y < 0)
-                    targetPosition.y = GameBoard.Fields.GetLength(1) - 1;
-                else if (targetPosition.y >= GameBoard.Fields.GetLength(1))
+                    targetPosition.y = GameBoard.BoardSize - 1;
+                else if (targetPosition.y >= GameBoard.BoardSize)
                     targetPosition.y = 0;
                 
-                return GameBoard.Fields[targetPosition.x, targetPosition.y];
+                return GameBoard.GetField(targetPosition);
             }
             else return null;
+        }
+
+        public GameField[] GetAdjacents(bool includeDiagonals)
+        {
+            var adjacents = new List<GameField>();
+            var directions = new List<Vector2Int>
+            {
+                Vector2Int.up,
+                Vector2Int.down,
+                Vector2Int.left,
+                Vector2Int.right
+            };
+
+            if (includeDiagonals)
+            {
+                directions.AddRange(new[]
+                {
+                    new Vector2Int(1, 1),
+                    new Vector2Int(1, -1),
+                    new Vector2Int(-1, -1),
+                    new Vector2Int(-1, 1)
+                });
+            }
+
+            foreach (var direction in directions)
+            {
+                var targetPosition = Position + direction;
+
+                if (targetPosition.x >= 0 && targetPosition.x < GameBoard.BoardSize &&
+                    targetPosition.y >= 0 && targetPosition.y < GameBoard.BoardSize)
+                {
+                    adjacents.Add(GameBoard.GetField(targetPosition));
+                }
+                else if (GameManager.Instance.GameConfig.AllowBoardLooping)
+                {
+                    if (targetPosition.x < 0)
+                        targetPosition.x = GameBoard.BoardSize - 1;
+                    else if (targetPosition.x >= GameBoard.BoardSize)
+                        targetPosition.x = 0;
+
+                    if (targetPosition.y < 0)
+                        targetPosition.y = GameBoard.BoardSize - 1;
+                    else if (targetPosition.y >= GameBoard.BoardSize)
+                        targetPosition.y = 0;
+
+                    adjacents.Add(GameBoard.GetField(targetPosition));
+                }
+            }
+
+            return adjacents.ToArray();
         }
     }
 }

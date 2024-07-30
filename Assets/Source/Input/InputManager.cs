@@ -6,7 +6,7 @@ using UnityEngine.InputSystem;
 namespace Snake.Input
 {
     /// <summary>
-    ///     Handles all InputControllers, should be placed in Main
+    ///     Handles all InputControllers
     /// </summary>
     public class InputManager : MonoBehaviour
     {

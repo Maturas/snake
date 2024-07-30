@@ -6,10 +6,16 @@ using UnityEngine;
 
 namespace Snake.Core
 {
+    // TODO Implement object pooling for GameFields and GameActors
+    
+    /// <summary>
+    ///     Main class of the game, runs the game loop and handles game state
+    /// </summary>
     public class GameManager : MonoBehaviour
     {
         public static event Action OnGameStart;
         public static event Action OnGameOver;
+        public static event Action OnGameWon;
         public static event Action<int> OnEdibleEaten;
         
         public static GameManager Instance { get; private set; }
@@ -20,11 +26,12 @@ namespace Snake.Core
         
         [SerializeField]
         private GameBoard gameBoard;
-        public GameBoard GameBoard => gameBoard;
         
         [SerializeField]
         private UIManager uiManager;
-        public UIManager UIManager => uiManager;
+
+        [SerializeField] 
+        private Camera mainCamera;
         
         private bool isGameRunning;
         
@@ -35,11 +42,14 @@ namespace Snake.Core
         
         private int ediblesEaten;
         
+        private int ticksSinceLastEdibleSpawn;
+        
         private void Awake()
         {
             Instance = this;
             PlayerInputController.OnEnterPressed += OnEnterPressed;
-            UIManager.Initialize();
+            mainCamera.orthographicSize = gameConfig.CameraSize;
+            uiManager.Initialize();
         }
 
         private void OnDestroy()
@@ -75,10 +85,9 @@ namespace Snake.Core
             tickIntervalMultiplierDuration = 0.0f;
             ediblesEaten = 0;
             
-            GameBoard.Cleanup();
-            GameBoard.Initialize();
+            gameBoard.OnStartGame();
             
-            // TODO Spawn snake
+            lastTickTime = Time.time;
             isGameRunning = true;
             OnGameStart?.Invoke();
         }
@@ -89,10 +98,22 @@ namespace Snake.Core
             OnGameOver?.Invoke();
         }
 
+        public void GameWon()
+        {
+            isGameRunning = false;
+            OnGameWon?.Invoke();
+        }
+
         private void OnTick()
         {
-            GameBoard.OnTick();
-            // TODO spawn edible elements
+            gameBoard.OnTick();
+            
+            ticksSinceLastEdibleSpawn++;
+            if (ticksSinceLastEdibleSpawn >= gameConfig.EdibleElementsSpawnFrequency)
+            {
+                ticksSinceLastEdibleSpawn = 0;
+                gameBoard.SpawnEdibles();
+            }
         }
 
         private void OnEnterPressed()

@@ -1,9 +1,9 @@
-﻿using UnityEngine;
-
-namespace Snake.Actors
+﻿namespace Snake.Actors
 {
-    public class SnakeTailActor : MonoBehaviour
+    /// <summary>
+    ///     Snake's tail segment actor, has no logic of its own
+    /// </summary>
+    public class SnakeTailActor : GameActor
     {
-        
     }
 }

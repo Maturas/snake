@@ -2,6 +2,9 @@
 
 namespace Snake.Actors.EdibleElements
 {
+    /// <summary>
+    ///     Element that changes the snake's tail length when eaten
+    /// </summary>
     public class EdibleElementTailLengthActor : EdibleElementActor
     {
         [SerializeField]
@@ -9,7 +12,7 @@ namespace Snake.Actors.EdibleElements
         
         protected override void OnEaten(SnakeHeadActor snakeHead)
         {
-            snakeHead.ChangeTailLength(tailLengthDelta);
+            snakeHead.ScheduleTailLength(tailLengthDelta);
         }
     }
 }

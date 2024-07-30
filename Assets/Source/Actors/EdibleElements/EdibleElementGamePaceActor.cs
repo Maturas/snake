@@ -3,6 +3,9 @@ using UnityEngine;
 
 namespace Snake.Actors.EdibleElements
 {
+    /// <summary>
+    ///     Element that temporarily changes the game's pace when eaten
+    /// </summary>
     public class EdibleElementGamePaceActor : EdibleElementActor
     {
         [SerializeField, Range(0.1f, 5.0f)] 

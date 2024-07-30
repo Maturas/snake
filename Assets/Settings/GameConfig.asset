@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ba8469c06da047f9a5512a6872e90443, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: 
+  tickInterval: 1
+  boardSize: 5
+  cameraSize: 5
+  boardSpacing: 1.25
+  edibleElementsSpawnFrequency: 10
+  edibleElementsSpawnAmount: 2
+  allowBoardLooping: 1
+  gameFieldPrefab: {fileID: 6264099055758572114, guid: 88022a231ea7ccf4bb9a2b019b3486e8, type: 3}
+  snakeHeadPrefab: {fileID: 6015357586498743966, guid: efe2cbd7362d99e48a876bd9bd5cbd04, type: 3}
+  snakeTailPrefab: {fileID: 4171299181248662420, guid: a16778cb6aa61444e84c19feb989c14a, type: 3}
+  edibleElementPrefabs:
+  - Prefab: {fileID: 5012021991477151183, guid: 2b9a4658126fc7b45b070c37491563b3, type: 3}
+    SpawnRarity: 2
+  - Prefab: {fileID: 352827822318683268, guid: 5e901660a88beef49b06461cf63d8ee4, type: 3}
+    SpawnRarity: 3
+  - Prefab: {fileID: 3202228851655548068, guid: 0dfc7c921a5e9384c8ac1d03435ff803, type: 3}
+    SpawnRarity: 1
+  - Prefab: {fileID: 7120900985702263197, guid: 1774ab30cabd3b64181e72a350d89118, type: 3}
+    SpawnRarity: 2
+  - Prefab: {fileID: 5773398791459830280, guid: f444e19e27593064689e400b35da7764, type: 3}
+    SpawnRarity: 5

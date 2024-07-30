@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Snake.Core
 {
+    /// <summary>
+    ///     Main game's configuration file, contains settings for the game
+    /// </summary>
     [CreateAssetMenu(fileName = "GameConfig", menuName = "Snake/GameConfig")]
     public class GameConfigSO : ScriptableObject
     {
@@ -16,6 +19,10 @@ namespace Snake.Core
         [SerializeField]
         private int boardSize = 5;
         public int BoardSize => boardSize;
+        
+        [SerializeField]
+        private float cameraSize = 5.0f;
+        public float CameraSize => cameraSize;
         
         [SerializeField]
         private float boardSpacing = 1.0f;
@@ -53,9 +60,7 @@ namespace Snake.Core
         public class EdibleElementConfig
         {
             public EdibleElementActor Prefab;
-
-            [Range(0.0f, 1.0f)]
-            public float SpawnRarity;
+            public int SpawnRarity;
         }
     }
 }
